@@ -103,23 +103,32 @@ output_dir = 'experiments/swiss_roll/results'
 with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     # Load original data
     group_0 = file["original"]
+    X_a = np.array(group_0["X_a"][:])
+    y_a = np.array(group_0["y_a"][:])
     X_b = np.array(group_0["X_b"][:])
     y_b = np.array(group_0["y_b"][:])
 
     # Load data for approach 1
     group_1 = file["difussion_maps"]
+    X_a_red_1 = np.array(group_1["X_a_red"][:])
     X_b_red_1 = np.array(group_1["X_b_red"][:])
 
     # Load data for approach 2
     group_2 = file["nystrom_accelerate"]
+    X_a_red_2 = np.array(group_2["X_a_red"][:])
     X_b_red_2 = np.array(group_2["X_b_red"][:])
 
     # Load data for approach 3
     group_3 = file["nystrom_extend"]
+    X_a_red_3 = np.array(group_3["X_a_red"][:])
     X_b_red_3 = np.array(group_3["X_b_red"][:])
 
             
-plot_original(X_b, y_b, output_dir, 'orig')
-plot_projection(X_b_red_1, y_b, output_dir, 'red_dm')
-plot_projection(X_b_red_2, y_b, output_dir, 'red_nys_acc')
-plot_projection(X_b_red_3, y_b, output_dir, 'red_nys_ext')
+plot_original(X_a, y_a, output_dir, 'orig_a')
+plot_original(X_b, y_b, output_dir, 'orig_b')
+plot_projection(X_a_red_1, y_a, output_dir, 'red_a_dm')
+plot_projection(X_a_red_2, y_a, output_dir, 'red_a_nys_acc')
+plot_projection(X_a_red_3, y_a, output_dir, 'red_a_nys_ext')
+plot_projection(X_b_red_1, y_b, output_dir, 'red_b_dm')
+plot_projection(X_b_red_2, y_b, output_dir, 'red_b_nys_acc')
+plot_projection(X_b_red_3, y_b, output_dir, 'red_b_nys_ext')
