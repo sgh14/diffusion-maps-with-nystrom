@@ -27,11 +27,6 @@ DM = DiffusionMaps(sigma=sigma, n_components=n_components, steps=steps, alpha=al
 X_red_1 = DM.fit_transform(X)
 X_b_red_1 = X_red_1[len(X_a):]
 
-# Approach 2: Nyström to accelerate training
-X_red_2 = DM.fit_transform(X, nystrom_landmarks=np.arange(len(X_a)))
-X_b_red_2 = X_red_2[len(X_a):]
-mae_2, mae_2_conf_int = mae(X_b_red_1, X_b_red_2)
-
 # Approach 3: Nyström to extend existing embedding
 X_a_red_3 = DM.fit_transform(X_a)
 X_b_red_3 = DM.transform(X_b)
@@ -55,12 +50,6 @@ with h5py.File(os.path.join(output_dir, 'results.h5'), "w") as file:
     # Group for approach 1
     group_1 = file.create_group("difussion_maps")
     group_1.create_dataset("X_b_red", data=X_b_red_1, compression='gzip')
-
-    # Group for approach 2
-    group_2 = file.create_group("nystrom_accelerate")
-    group_2.create_dataset("X_b_red", data=X_b_red_2, compression='gzip')
-    group_2.create_dataset("mae", data=mae_2)
-    # group_2.create_dataset("mae_conf_int", data=mae_2_conf_int)
 
     # Group for approach 3
     group_3 = file.create_group("nystrom_extend")

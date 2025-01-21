@@ -109,10 +109,6 @@ with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     group_1 = file["difussion_maps"]
     X_b_red_1 = np.array(group_1["X_b_red"][:])
 
-    # Load data for approach 2
-    group_2 = file["nystrom_accelerate"]
-    X_b_red_2 = np.array(group_2["X_b_red"][:])
-
     # Load data for approach 3
     group_3 = file["nystrom_extend"]
     X_b_red_3 = np.array(group_3["X_b_red"][:])
@@ -120,5 +116,4 @@ with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
             
 plot_original(X_b, y_b, output_dir, 'orig')
 plot_projection(X_b_red_1, y_b, output_dir, 'red_dm')
-plot_projection(X_b_red_2, y_b, output_dir, 'red_nys_acc')
 plot_projection(X_b_red_3, y_b, output_dir, 'red_nys_ext')
