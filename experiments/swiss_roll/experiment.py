@@ -7,7 +7,8 @@ from aux_functions import get_sigma, find_optimal_hyperparameters
 from experiments.swiss_roll.load_data import get_datasets
 from experiments.metrics import mae
 
-output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
+# output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
+output_dir = 'experiments/swiss_roll/results'
 os.makedirs(output_dir, exist_ok=True)
 
 # Get the data

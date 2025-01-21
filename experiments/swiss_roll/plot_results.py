@@ -97,7 +97,8 @@ def plot_projection(X, y, output_dir, filename):
         plt.close(fig)
 
 
-output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
+# output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
+output_dir = 'experiments/swiss_roll/results'
 # Load data from the HDF5 file
 with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     # Load original data
