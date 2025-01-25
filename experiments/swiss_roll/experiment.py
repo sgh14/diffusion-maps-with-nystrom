@@ -7,8 +7,7 @@ from aux_functions import get_sigma, find_optimal_hyperparameters
 from experiments.swiss_roll.load_data import get_datasets
 from experiments.metrics import mae
 
-# output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
-output_dir = 'experiments/swiss_roll/results'
+output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
 os.makedirs(output_dir, exist_ok=True)
 
 # Get the data
@@ -16,11 +15,11 @@ os.makedirs(output_dir, exist_ok=True)
 X = np.vstack([X_a, X_b])
 
 # Find optimal values for n_components, q, steps and alpha
-q_vals = np.linspace(0, 1, 200)
+q_vals = np.array([0.01, 0.1, 0.2, 0.3, 0.4, 0.5])
 alpha_vals = np.array([0, 1])
-steps_vals = np.array([2**i for i in range(10)])
-# n_components, q, alpha, steps = find_optimal_hyperparameters(X_a, q_vals, alpha_vals, steps_vals)
-n_components, q, alpha, steps = 2, 5e-3, 1, 100
+steps_vals = np.array([2**i for i in range(7)])
+n_components, q, alpha, steps = find_optimal_hyperparameters(X_a, q_vals, alpha_vals, steps_vals, output_dir=output_dir)
+# n_components, q, alpha, steps = 1, 1e-2, 1, 10
 sigma = get_sigma(X_a, q)
 DM = DiffusionMaps(sigma=sigma, n_components=n_components, steps=steps, alpha=alpha)
 
@@ -57,8 +56,8 @@ with h5py.File(os.path.join(output_dir, 'results.h5'), "w") as file:
     group_1.create_dataset("X_b_red", data=X_b_red_1, compression='gzip')
 
     # Group for approach 3
-    group_3 = file.create_group("nystrom_extend")
+    group_3 = file.create_group("nystrom")
     group_3.create_dataset("X_a_red", data=X_a_red_3, compression='gzip')
     group_3.create_dataset("X_b_red", data=X_b_red_3, compression='gzip')
     group_3.create_dataset("mae", data=mae_3)
-    # group_3.create_dataset("mae_conf_int", data=mae_3_conf_int)
+    group_3.create_dataset("mae_conf_int", data=mae_3_conf_int)

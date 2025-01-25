@@ -48,7 +48,7 @@ def plot_original(X, y, output_dir, filename):
     # ax.dist = 12
     ax.grid(False)
     fig.tight_layout()
-
+    
     for format in ('.pdf', '.png', '.svg'):
         fig.savefig(os.path.join(output_dir, filename + format))
 
@@ -97,8 +97,7 @@ def plot_projection(X, y, output_dir, filename):
         plt.close(fig)
 
 
-# output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
-output_dir = 'experiments/swiss_roll/results'
+output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
 # Load data from the HDF5 file
 with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     # Load original data
@@ -114,7 +113,7 @@ with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     X_b_red_1 = np.array(group_1["X_b_red"][:])
 
     # Load data for approach 3
-    group_3 = file["nystrom_extend"]
+    group_3 = file["nystrom"]
     X_a_red_3 = np.array(group_3["X_a_red"][:])
     X_b_red_3 = np.array(group_3["X_b_red"][:])
 
@@ -122,6 +121,6 @@ with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
 plot_original(X_a, y_a, output_dir, 'orig_a')
 plot_original(X_b, y_b, output_dir, 'orig_b')
 plot_projection(X_a_red_1, y_a, output_dir, 'red_a_dm')
-plot_projection(X_a_red_3, y_a, output_dir, 'red_a_nys_ext')
+plot_projection(X_a_red_3, y_a, output_dir, 'red_a_nys')
 plot_projection(X_b_red_1, y_b, output_dir, 'red_b_dm')
-plot_projection(X_b_red_3, y_b, output_dir, 'red_b_nys_ext')
+plot_projection(X_b_red_3, y_b, output_dir, 'red_b_nys')
