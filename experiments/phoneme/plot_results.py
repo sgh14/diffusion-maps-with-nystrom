@@ -27,6 +27,8 @@ def set_equal_ranges(ax, max_range):
     x_center = (x_max + x_min) / 2
     y_center = (y_max + y_min) / 2
 
+    max_range = max_range * 1.05
+
     ax.set_xlim(x_center - max_range / 2, x_center + max_range / 2)
     ax.set_ylim(y_center - max_range / 2, y_center + max_range / 2)
 
@@ -67,7 +69,7 @@ def plot_projection(X, y, output_dir, filename):
         for dim1 in range(0, ndims):
             for dim2 in range(dim1 + 1, ndims):
                 fig, ax = plt.subplots(figsize=(3, 3), constrained_layout=True)
-                ax.scatter(X[:, dim1], X[:, dim2], c=y)
+                ax.scatter(X[:, dim1], X[:, dim2], c=[colors[i] for i in y])
                 # Remove the ticks
                 ax.set_xticks([])
                 ax.set_yticks([])

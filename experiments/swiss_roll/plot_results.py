@@ -24,6 +24,8 @@ def set_equal_ranges(ax, max_range):
     x_center = (x_max + x_min) / 2
     y_center = (y_max + y_min) / 2
 
+    max_range = max_range * 1.05
+
     ax.set_xlim(x_center - max_range / 2, x_center + max_range / 2)
     ax.set_ylim(y_center - max_range / 2, y_center + max_range / 2)
 
