@@ -19,12 +19,13 @@ def get_sigma(X, q=0.5):
     return sigma
 
 
-def gaussian_density(x, mean, var):
-    y = 1/np.sqrt(2*np.pi*var)*np.exp(-(x-mean)**2/(2*var))
-    ids = y == 0 | np.isnan(y) | np.isinf(y)
-    y = np.where(ids, np.mean(y[~ids]), y)
+def log_gaussian_density(x, mean, var):
+    # p = 1/np.sqrt(2*np.pi*var)*np.exp(-(x-mean)**2/(2*var))
+    # ids = p == 0 | np.isnan(p) | np.isinf(p)
+    # p = np.where(ids, np.mean(p[~ids]), p)
+    log_p = -0.5*np.log(2*np.pi*var) - (x - mean)**2/(2*var)
 
-    return y
+    return log_p
 
 
 def log_likelihood(eigenvalues_1, eigenvalues_2):
@@ -34,10 +35,12 @@ def log_likelihood(eigenvalues_1, eigenvalues_2):
     sample_mean_2 = np.mean(eigenvalues_2)
     sample_var_2 = np.var(eigenvalues_2, ddof=1 if len(eigenvalues_1) > 1 else 0)
     var = ((p - 1)*sample_var_1 + (q - 1)*sample_var_2)/(p + q - 2)
-    l = np.sum(np.log(gaussian_density(eigenvalues_1, sample_mean_1, var)))\
-        + np.sum(np.log(gaussian_density(eigenvalues_2, sample_mean_2, var)))
+    l = np.sum(log_gaussian_density(eigenvalues_1, sample_mean_1, var))\
+        + np.sum(log_gaussian_density(eigenvalues_2, sample_mean_2, var))
     
-    return l
+    mean_l = l / (p + q)
+    
+    return mean_l
 
 
 def find_optimal_hyperparameters(X, q_vals, alpha_vals, steps_vals, output_dir='', max_components=None):
