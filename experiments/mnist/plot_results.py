@@ -1,9 +1,11 @@
 import os
+from os import path
 import h5py
 import numpy as np
 from matplotlib import pyplot as plt
 
 plt.style.use('experiments/science.mplstyle')
+colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 
 def get_max_range(X):
@@ -35,25 +37,53 @@ def set_equal_ranges(ax, max_range):
     return ax
 
 
-def plot_original(X, y, output_dir, filename):
+# Function to sample 2 images per class from the dataset
+def sample_images_per_class(X, y, images_per_class=2):
+    selected_images = []
+    selected_labels = []
+    
+    n_classes = len(np.unique(y))
+    for class_label in range(n_classes):
+        class_indices = np.where(y == class_label)[0]
+        selected_indices = class_indices[:images_per_class]
+        selected_images.extend(X[selected_indices])
+        selected_labels.extend(y[selected_indices])
+    
+    return np.array(selected_images), np.array(selected_labels)
+
+
+def plot_images(axes, X, y=[]):
+    for i, ax in enumerate(axes.ravel()):
+        ax.imshow(X[i], cmap='gray')
+        if len(y) > 0:
+            ax.set_title(y[i])
+
+        ax.axis('off')
+    
+    return axes
+
+
+def plot_original(
+    X,
+    y,
+    output_dir,
+    filename,
+    images_per_class=2,
+    grid_shape=(3, 4)
+):
     os.makedirs(output_dir, exist_ok=True)
 
-    fig, ax = plt.subplots(figsize=(3, 3), subplot_kw={"projection": "3d"})
-    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, alpha=1)
-    # ax.set_xlabel('$x_1$')
-    ax.set_xlim([-13, 13])
-    # ax.set_ylabel('$x_2$')
-    ax.set_ylim([-3, 23])
-    # ax.set_zlabel('$x_3$')
-    ax.set_zlim([-13, 13])
-    ax.view_init(15, -72)
-    # ax.dist = 12
-    ax.grid(False)
+    fig, axes = plt.subplots(
+        grid_shape[0], grid_shape[1],
+        figsize=(3, 3),
+        gridspec_kw={'wspace': 0.2, 'hspace': 0.2}
+    )
+    X, y = sample_images_per_class(X, y, images_per_class)
+    axes = plot_images(axes, X, y)
     fig.tight_layout()
-    
     for format in ('.pdf', '.png', '.svg'):
-        fig.savefig(os.path.join(output_dir, filename + format))
-
+        fig.savefig(path.join(output_dir, filename + format))
+    
     plt.close(fig)
 
 
@@ -65,7 +95,7 @@ def plot_projection(X, y, output_dir, filename):
         for dim1 in range(0, ndims):
             for dim2 in range(dim1 + 1, ndims):
                 fig, ax = plt.subplots(figsize=(3, 3), constrained_layout=True)
-                ax.scatter(X[:, dim1], X[:, dim2], c=y)
+                ax.scatter(X[:, dim1], X[:, dim2], c=[colors[i] for i in y])
                 # Remove the ticks
                 ax.set_xticks([])
                 ax.set_yticks([])
@@ -75,6 +105,11 @@ def plot_projection(X, y, output_dir, filename):
                 # ax.set_xlabel(r'$\Psi_1$')
                 # ax.set_ylabel(r'$\Psi_2$')
                 ax = set_equal_ranges(ax, max_range) # ax.set_box_aspect(1)
+                # Create a list of handles and labels for the legend
+                unique_y = np.unique(y)
+                handles = [plt.Line2D([0], [0], linewidth=2, marker='o', color='w', markerfacecolor=colors[val], markersize=10) for val in unique_y]
+                labels = [str(val) for val in unique_y]  # Adjust labels based on your case
+                fig.legend(handles, labels, loc='lower center', ncol=len(unique_y), handletextpad=0.2, columnspacing=0.2, bbox_to_anchor=(0.5, -0.12))
 
                 for format in ('.pdf', '.png', '.svg'):
                     fig.savefig(os.path.join(output_dir, filename + f'_dims_{dim1+1}_{dim2+1}' + format))
@@ -92,6 +127,11 @@ def plot_projection(X, y, output_dir, filename):
         # ax.set_xlabel(r'$\Psi_1$')
         # ax.set_ylabel(r'$\Psi_2$')
         ax = set_equal_ranges(ax, max_range) # ax.set_box_aspect(1)
+        # Create a list of handles and labels for the legend
+        unique_y = np.unique(y)
+        handles = [plt.Line2D([0], [0], linewidth=2, marker='o', color='w', markerfacecolor=colors[val], markersize=10) for val in unique_y]
+        labels = [str(val) for val in unique_y]  # Adjust labels based on your case
+        fig.legend(handles, labels, loc='lower center', ncol=len(unique_y), handletextpad=0.2, columnspacing=0.2, bbox_to_anchor=(0.5, -0.12))
 
         for format in ('.pdf', '.png', '.svg'):
             fig.savefig(os.path.join(output_dir, filename + f'_dims_{1}' + format))
@@ -99,8 +139,7 @@ def plot_projection(X, y, output_dir, filename):
         plt.close(fig)
 
 
-# output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
-output_dir = 'experiments/swiss_roll/results'
+output_dir = '/scratch/sgarcia/nystrom_dm/experiments/mnist/results'
 # Load data from the HDF5 file
 with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     # Load original data
@@ -121,8 +160,8 @@ with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     X_b_red_3 = np.array(group_3["X_b_red"][:])
 
             
-plot_original(X_a, y_a, output_dir, 'orig_a')
-plot_original(X_b, y_b, output_dir, 'orig_b')
+plot_original(X_a, y_a, output_dir, 'orig_a', images_per_class=2, grid_shape=(3, 4))
+plot_original(X_b, y_b, output_dir, 'orig_b', images_per_class=2, grid_shape=(3, 4))
 plot_projection(X_a_red_1, y_a, output_dir, 'red_a_dm')
 plot_projection(X_a_red_3, y_a, output_dir, 'red_a_nys')
 plot_projection(X_b_red_1, y_b, output_dir, 'red_b_dm')

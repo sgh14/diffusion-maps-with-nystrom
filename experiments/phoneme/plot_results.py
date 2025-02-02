@@ -2,8 +2,11 @@ import os
 import h5py
 import numpy as np
 from matplotlib import pyplot as plt
+import matplotlib.ticker as ticker
 
 plt.style.use('experiments/science.mplstyle')
+colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+classes = {0: 'aa', 1: 'ao', 2: 'dcl', 3: 'iy', 4: 'sh'}
 
 
 def get_max_range(X):
@@ -35,22 +38,23 @@ def set_equal_ranges(ax, max_range):
     return ax
 
 
-def plot_original(X, y, output_dir, filename):
+def plot_original(X, y, output_dir, filename, n_samples=30):
     os.makedirs(output_dir, exist_ok=True)
 
-    fig, ax = plt.subplots(figsize=(3, 3), subplot_kw={"projection": "3d"})
-    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, alpha=1)
-    # ax.set_xlabel('$x_1$')
-    ax.set_xlim([-13, 13])
-    # ax.set_ylabel('$x_2$')
-    ax.set_ylim([-3, 23])
-    # ax.set_zlabel('$x_3$')
-    ax.set_zlim([-13, 13])
-    ax.view_init(15, -72)
-    # ax.dist = 12
-    ax.grid(False)
-    fig.tight_layout()
+    fig, ax = plt.subplots(figsize=(3, 3), constrained_layout=True)
+    for i in range(n_samples):
+        ax.plot(X[i], color=colors[y[i]], linewidth=1, alpha=0.75)
     
+    ax.set_box_aspect(1)
+    ax.yaxis.set_major_formatter(ticker.FormatStrFormatter('%.0f'))
+    # Create a list of handles and labels for the legend
+    unique_y = np.unique(y)
+    handles = [plt.Line2D([0], [0], linewidth=2, marker='o', color='w', markerfacecolor=colors[val], markersize=10) for val in unique_y]
+    labels = [classes[val] for val in unique_y]  # Adjust labels based on your case
+
+    # Add the legend below the plot, with ncol=number of unique y values for one-row legend
+    fig.legend(handles, labels, loc='lower center', ncol=len(unique_y), handletextpad=0.2, columnspacing=0.2, bbox_to_anchor=(0.5, -0.1))
+
     for format in ('.pdf', '.png', '.svg'):
         fig.savefig(os.path.join(output_dir, filename + format))
 
@@ -65,7 +69,7 @@ def plot_projection(X, y, output_dir, filename):
         for dim1 in range(0, ndims):
             for dim2 in range(dim1 + 1, ndims):
                 fig, ax = plt.subplots(figsize=(3, 3), constrained_layout=True)
-                ax.scatter(X[:, dim1], X[:, dim2], c=y)
+                ax.scatter(X[:, dim1], X[:, dim2], c=[colors[i] for i in y])
                 # Remove the ticks
                 ax.set_xticks([])
                 ax.set_yticks([])
@@ -99,8 +103,7 @@ def plot_projection(X, y, output_dir, filename):
         plt.close(fig)
 
 
-# output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
-output_dir = 'experiments/swiss_roll/results'
+output_dir = '/scratch/sgarcia/nystrom_dm/experiments/phoneme/results'
 # Load data from the HDF5 file
 with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     # Load original data

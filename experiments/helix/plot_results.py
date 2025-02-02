@@ -1,7 +1,9 @@
 import os
+from os import path
 import h5py
 import numpy as np
 from matplotlib import pyplot as plt
+import matplotlib.ticker as ticker
 
 plt.style.use('experiments/science.mplstyle')
 
@@ -41,18 +43,21 @@ def plot_original(X, y, output_dir, filename):
     fig, ax = plt.subplots(figsize=(3, 3), subplot_kw={"projection": "3d"})
     ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, alpha=1)
     # ax.set_xlabel('$x_1$')
-    ax.set_xlim([-13, 13])
+    ax.set_xlim([-1, 1])
     # ax.set_ylabel('$x_2$')
-    ax.set_ylim([-3, 23])
+    ax.set_ylim([-1, 1])
     # ax.set_zlabel('$x_3$')
-    ax.set_zlim([-13, 13])
+    ax.set_zlim([-1, 1])
     ax.view_init(15, -72)
     # ax.dist = 12
     ax.grid(False)
     fig.tight_layout()
-    
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax.zaxis.set_major_locator(ticker.MultipleLocator(1))
+
     for format in ('.pdf', '.png', '.svg'):
-        fig.savefig(os.path.join(output_dir, filename + format))
+        fig.savefig(path.join(output_dir, filename + format))
 
     plt.close(fig)
 
@@ -99,8 +104,7 @@ def plot_projection(X, y, output_dir, filename):
         plt.close(fig)
 
 
-# output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
-output_dir = 'experiments/swiss_roll/results'
+output_dir = '/scratch/sgarcia/nystrom_dm/experiments/helix/results'
 # Load data from the HDF5 file
 with h5py.File(os.path.join(output_dir, 'results.h5'), "r") as file:
     # Load original data

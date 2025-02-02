@@ -77,14 +77,6 @@ class DiffusionMaps:
     
 
     @staticmethod
-    def _nystrom_extension(K_mix, old_eigenvectors, old_eigenvalues):
-        new_eigenvectors = (K_mix @ old_eigenvectors) / old_eigenvalues[np.newaxis, :]
-        new_eigenvalues = old_eigenvalues
-
-        return new_eigenvectors, new_eigenvalues
-    
-
-    @staticmethod
     def _degree_vector(K):
         d = np.sum(K, axis=1)
 
@@ -107,7 +99,7 @@ class DiffusionMaps:
         return Psis
 
 
-    def fit_transform(self, X, y=None, nystrom_landmarks=[]):
+    def fit_transform(self, X, y=None):
         self.X = X
         # Compute the kernel
         K = self._rbf_kernel(self.X, self.X, self.gamma)
@@ -121,19 +113,8 @@ class DiffusionMaps:
         self.pi = self._stationary_dist(self.d_W)
         # Compute the matrix A
         A = self._normalize_by_degree(self.W, self.d_W, self.d_W, 0.5)
-        if len(nystrom_landmarks)>0:
-            A_landmarks = A[nystrom_landmarks, :][:, nystrom_landmarks]
-            # Get the eigenvalues and eigenvectors of A
-            lambdas_landmarks, phis_landmarks = self._spectral_decomposition(A_landmarks)
-            A_mix = A[:, nystrom_landmarks]
-            self.phis, self.lambdas = self._nystrom_extension(
-                A_mix,
-                phis_landmarks,
-                lambdas_landmarks
-            )
-        else:
-            self.lambdas, self.phis = self._spectral_decomposition(A)
-
+        # Get the eigenvectors and eigenvalues
+        self.lambdas, self.phis = self._spectral_decomposition(A)
         # Reduce dimension
         lambdas_red = self.lambdas[1:self.n_components + 1]
         phis_red = self.phis[:, 1:self.n_components + 1]            
@@ -141,6 +122,14 @@ class DiffusionMaps:
         X_red = self._get_embedding(phis_red, lambdas_red, self.pi)
 
         return X_red
+
+    
+    @staticmethod
+    def _nystrom_extension(K_mix, old_eigenvectors, old_eigenvalues):
+        new_eigenvectors = (K_mix @ old_eigenvectors) / old_eigenvalues[np.newaxis, :]
+        new_eigenvalues = old_eigenvalues
+
+        return new_eigenvectors, new_eigenvalues
 
 
     def _get_K_alpha_approx(self, X_new):

@@ -4,24 +4,26 @@ import numpy as np
 
 from DiffusionMaps import DiffusionMaps
 from aux_functions import get_sigma, find_optimal_hyperparameters, plot_eigenvalues
-from experiments.swiss_roll.load_data import get_datasets
+from experiments.mnist.load_data import get_datasets
 from experiments.metrics import mae
 
-# output_dir = '/scratch/sgarcia/nystrom_dm/experiments/swiss_roll/results'
-output_dir = 'experiments/swiss_roll/results'
+output_dir = '/scratch/sgarcia/nystrom_dm/experiments/mnist/results'
 os.makedirs(output_dir, exist_ok=True)
 
 # Get the data
-(X_a, y_a), (X_b, y_b) = get_datasets(npoints=2000, split=0.5, seed=123, noise=0)
+(X_a, y_a), (X_b, y_b) = get_datasets(npoints=5000, split=0.1, seed=123, noise=0)
+img_shape = X_a.shape[1:]
+X_a = X_a.reshape((X_a.shape[0], -1))
+X_b = X_b.reshape((X_b.shape[0], -1))
 X = np.vstack([X_a, X_b])
 
 # Find optimal values for n_components, q, steps and alpha
 q_vals = np.array([0.01, 0.1, 0.2])
-alpha_vals = np.array([1])
+alpha_vals = np.array([0])
 steps_vals = np.array([2**i for i in range(7)])
 plot_eigenvalues(X_a, q_vals, alpha_vals, steps_vals, output_dir, max_components=25)
 n_components, q, alpha, steps = find_optimal_hyperparameters(X_a, q_vals, alpha_vals, steps_vals, output_dir, max_components=25)
-n_components, q, alpha, steps = 2, 1e-2, 1, 1
+n_components, q, alpha, steps = 2, 1e-2, 0, 1
 sigma = get_sigma(X_a, q)
 DM = DiffusionMaps(sigma=sigma, n_components=n_components, steps=steps, alpha=alpha)
 
@@ -35,7 +37,8 @@ X_a_red_3 = DM.fit_transform(X_a)
 X_b_red_3 = DM.transform(X_b)
 mae_3, mae_3_conf_int = mae(X_b_red_1, X_b_red_3)
 
-
+X_a = X_a.reshape(-1, *img_shape)
+X_b = X_b.reshape(-1, *img_shape)
 with h5py.File(os.path.join(output_dir, 'results.h5'), "w") as file:
     # Group for hyperparameters
     group_hyperparameters = file.create_group("hyperparameters")
