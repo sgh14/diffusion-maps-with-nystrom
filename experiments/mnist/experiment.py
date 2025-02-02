@@ -3,7 +3,7 @@ import h5py
 import numpy as np
 
 from DiffusionMaps import DiffusionMaps
-from aux_functions import get_sigma, find_optimal_hyperparameters
+from aux_functions import get_sigma, find_optimal_hyperparameters, plot_eigenvalues
 from experiments.mnist.load_data import get_datasets
 from experiments.metrics import mae
 
@@ -18,11 +18,12 @@ X_b = X_b.reshape((X_b.shape[0], -1))
 X = np.vstack([X_a, X_b])
 
 # Find optimal values for n_components, q, steps and alpha
-q_vals = np.array([0.01, 0.1, 0.2, 0.3, 0.4, 0.5])
-alpha_vals = np.array([0, 1])
+q_vals = np.array([0.01, 0.1, 0.2])
+alpha_vals = np.array([0])
 steps_vals = np.array([2**i for i in range(7)])
-n_components, q, alpha, steps = find_optimal_hyperparameters(X_a, q_vals, alpha_vals, steps_vals, output_dir=output_dir)
-# n_components, q, alpha, steps = 4, 1e-2, 0, 1
+plot_eigenvalues(X_a, q_vals, alpha_vals, steps_vals, output_dir, max_components=25)
+n_components, q, alpha, steps = find_optimal_hyperparameters(X_a, q_vals, alpha_vals, steps_vals, output_dir, max_components=25)
+n_components, q, alpha, steps = 2, 1e-2, 0, 1
 sigma = get_sigma(X_a, q)
 DM = DiffusionMaps(sigma=sigma, n_components=n_components, steps=steps, alpha=alpha)
 

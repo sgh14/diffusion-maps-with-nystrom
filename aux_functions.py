@@ -80,3 +80,32 @@ def find_optimal_hyperparameters(X, q_vals, alpha_vals, steps_vals, output_dir='
         fig.savefig(os.path.join(output_dir, 'l_values' + format))
     
     return best_hyperparameters
+
+
+def plot_eigenvalues(X, q_vals, alpha_vals, steps_vals, output_dir='', max_components=None, log_scale=False):
+    max_components = max_components if max_components else (X.shape[-1] - 1)
+    x = np.arange(1, max_components + 1)
+    fig, axes = plt.subplots(len(alpha_vals), 1, figsize=(6, 6), sharex=True, sharey=True, squeeze=False)
+    for ax, alpha in zip(axes.flatten(), alpha_vals):
+        for j, steps in enumerate(steps_vals):
+            for k, q in enumerate(q_vals):
+                DM = DiffusionMaps(get_sigma(X, q), 2, steps, alpha)
+                _ = DM.fit_transform(X)
+                eigenvalues = DM.lambdas[1:]**steps
+                y = np.log(eigenvalues[:max_components]) if log_scale else eigenvalues[:max_components]
+                ax.plot(x, y, color=colors[j], linestyle=linestyles[k])
+                if len(alpha_vals) > 1:
+                    ax.set_title(f'$\\alpha = {alpha}$')
+                ax.set_ylabel('$\\log(\\lambda^t)$' if log_scale else '\\lambda^t')
+
+    ax.set_xlabel('$d$')
+    # ax.set_xticks(x)
+    # Create custom legends
+    q_legend = {f'${q:.2f}$': Line2D([0], [0], linewidth=2, color='gray', linestyle=linestyles[i]) for i, q in enumerate(q_vals)}
+    steps_legend = {f'${steps}$': Line2D([0], [0], linewidth=2, color=colors[i]) for i, steps in enumerate(steps_vals)}
+    if len(q_vals) > 1:
+        fig.legend(q_legend.values(), q_legend.keys(), title="Valor de $q$", loc='lower center', bbox_to_anchor=(0.5, -0.05), ncol=6, handletextpad=0.3, columnspacing=0.3)
+    if len(steps_vals) > 1:
+        fig.legend(steps_legend.values(), steps_legend.keys(), title="Valor de $t$", loc='lower center', bbox_to_anchor=(0.5, -0.13), ncol=7, handletextpad=0.3, columnspacing=0.3, handlelength=2.5)
+    for format in ('.pdf', '.png', '.svg'):
+        fig.savefig(os.path.join(output_dir, 'eigenvalues' + format))
