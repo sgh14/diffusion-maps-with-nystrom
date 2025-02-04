@@ -100,7 +100,7 @@ class DiffusionMaps:
 
 
     def fit_transform(self, X, y=None):
-        self.X = X
+        self.X = X.reshape((X.shape[0], -1))
         # Compute the kernel
         K = self._rbf_kernel(self.X, self.X, self.gamma)
         # Compute degree vector        
@@ -155,9 +155,10 @@ class DiffusionMaps:
 
 
     def transform(self, X_new):
+        X_new_flat = X_new.reshape((X_new.shape[0], -1))
         lambdas_red = self.lambdas[:self.n_components + 1]
         phis_red = self.phis[:, :self.n_components + 1]
-        A_mix = self._get_A_approx(X_new)
+        A_mix = self._get_A_approx(X_new_flat)
         new_phis, new_lambdas = self._nystrom_extension(A_mix, phis_red, lambdas_red)
         new_pi = new_phis[:, 0]**2
         X_new_red = self._get_embedding(new_phis[:, 1:], new_lambdas[1:], new_pi)
