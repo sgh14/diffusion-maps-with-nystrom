@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "diffusionmaps"                     # How users will pip install and import
+version = "0.1.0"                          # Synced with your __init__.py
+authors = [
+  { name="Sergio García Heredia", email="sergio.garcia.heredia.2000@gmail.com" },
+]
+description = "A Diffusion Maps implementation following scikit-learn conventions."
+readme = "README.md"
+requires-python = ">=3.8"                  # Minimum Python version compatibility
+license = { file = "LICENSE" }             # Points to the LICENSE file
+keywords = ["dimensionality reduction", "diffusion maps", "manifold learning", "machine learning"]
+classifiers = [
+    "Development Status :: 3 - Alpha",     # Or "4 - Beta" / "5 - Production/Stable"
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "numpy>=1.20",                         # Specify minimum versions if known/needed
+    "scikit-learn>=1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/sgh14/diffusion-maps-with-nystrom" # Link to your repo
+Repository = "https://github.com/sgh14/diffusion-maps-with-nystrom"
+# Bug Tracker = "https://github.com/sgh14/diffusion-maps-with-nystrom/issues" # Optional
+
+# --- Configuration for finding the package in the 'src' directory ---
+[tool.setuptools.packages.find]
+where = ["src"]                            # Look for packages in src/
