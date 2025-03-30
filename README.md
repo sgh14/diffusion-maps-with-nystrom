@@ -23,11 +23,11 @@ Diffusion Maps model data as a graph and analyze the diffusion process (random w
 You can install this package directly from GitHub using pip:
 
 ```bash
-pip install git+https://github.com/your_username/diffusion-maps-repo.git
+pip install git+https://github.com/sgh14/diffusion-maps-with-nystrom.git 
 ```
 Or, to install a specific version (e.g., v0.1.0 tag):
 ```bash
-pip install git+https://github.com/your_username/diffusion-maps-repo.git@v0.1.0
+pip install git+https://github.com/sgh14/diffusion-maps-with-nystrom.git@v0.1.0
 ```
 
 ## Usage Example
