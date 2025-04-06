@@ -30,72 +30,23 @@ Or, to install a specific version (e.g., v0.1.0 tag):
 pip install git+https://github.com/sgh14/diffusion-maps-with-nystrom.git@v0.1.0
 ```
 
-## Usage Example
+## Usage
 
-Here's a basic example of how to use the DiffusionMaps class:
+Here's a basic template of how to use the DiffusionMaps class:
 
 ```python
-import numpy as np
-from diffusionmaps import DiffusionMaps # Import the class
-import matplotlib.pyplot as plt
+from diffusionmaps import DiffusionMaps
 
-# 1. Create some sample data (e.g., points along a curve)
-n_samples = 200
-t = np.linspace(0, 4 * np.pi, n_samples)
-x = t * np.cos(t)
-y = t * np.sin(t)
-noise = 0.5
-X = np.vstack((x, y)).T + noise * np.random.randn(n_samples, 2)
+# Prepare your data
+X_train = ...  # Your training data
 
-# 2. Initialize and fit the Diffusion Maps model
-# sigma controls the kernel width (locality)
-# n_components is the target dimension
+# Initialize and fit the Diffusion Maps model
 dm = DiffusionMaps(n_components=2, sigma=2.0, steps=1, alpha=0.5)
+embeddings_train = dm.fit_transform(X_train)
 
-# 3. Compute the diffusion map embedding
-X_diff_map = dm.fit_transform(X)
-
-# The first component (X_diff_map[:, 0]) often captures the main progression
-# The second component (X_diff_map[:, 1]) captures other variations
-
-# 4. Visualize the results
-fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-# Original data colored by the first diffusion component
-sc1 = axes[0].scatter(X[:, 0], X[:, 1], c=X_diff_map[:, 0], cmap='viridis')
-axes[0].set_title('Original Data (Colored by DiffMap[0])')
-axes[0].set_xlabel('Feature 1')
-axes[0].set_ylabel('Feature 2')
-fig.colorbar(sc1, ax=axes[0], label='1st Diffusion Component')
-
-# Diffusion Map embedding colored by the first component
-sc2 = axes[1].scatter(X_diff_map[:, 0], X_diff_map[:, 1], c=X_diff_map[:, 0], cmap='viridis')
-axes[1].set_title('Diffusion Map Embedding')
-axes[1].set_xlabel('Diffusion Component 1')
-axes[1].set_ylabel('Diffusion Component 2')
-fig.colorbar(sc2, ax=axes[1], label='1st Diffusion Component')
-
-plt.tight_layout()
-plt.show()
-
-# --- Example of transforming new data ---
-# Create some new points along the same curve
-t_new = np.linspace(np.pi, 3 * np.pi, 50) # Points in the middle
-x_new = t_new * np.cos(t_new)
-y_new = t_new * np.sin(t_new)
-X_new = np.vstack((x_new, y_new)).T + noise * np.random.randn(50, 2)
-
-# Transform using the fitted model (Nystrom extension)
-X_new_diff_map = dm.transform(X_new)
-
-# Add new points to the plots
-axes[0].scatter(X_new[:, 0], X_new[:, 1], c='red', marker='x', s=50, label='New Data')
-axes[1].scatter(X_new_diff_map[:, 0], X_new_diff_map[:, 1], c='red', marker='x', s=50, label='New Data Transformed')
-axes[0].legend()
-axes[1].legend()
-
-# Re-display plot if running interactively or save figure
-# plt.show() or fig.savefig('diffusion_map_example.png')
+# Use Nyström's method for embedding new data
+X_new = ...  # New data
+embeddings_new = dm.transform(X_new)
 ```
 
 ## API Overview
