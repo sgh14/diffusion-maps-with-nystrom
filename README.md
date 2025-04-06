@@ -1,4 +1,4 @@
-# diffusion-maps-with-nystrom
+# Diffusion Maps with Nyström out-of-sample extension
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- Add other badges if you set up CI/CD or publish to PyPI -->
@@ -114,7 +114,6 @@ See the class docstrings for detailed information on methods and attributes.
 
 ## Contributing
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
-(Add more specific guidelines if desired - e.g., coding standards, testing).
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
