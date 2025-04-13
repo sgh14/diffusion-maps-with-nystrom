@@ -161,8 +161,8 @@ class DiffusionMaps(BaseEstimator, TransformerMixin):
         """
         Ensures a canonical orientation for eigenvectors.
 
-        Fixes the sign of each eigenvector such that the element with the
-        largest absolute value is positive. This provides deterministic output.
+        Fixes the sign of each eigenvector such that the first non-zero
+        element in the vector is positive. This provides deterministic output.
 
         Parameters
         ----------
@@ -175,10 +175,10 @@ class DiffusionMaps(BaseEstimator, TransformerMixin):
             The eigenvectors with fixed orientation. Modified in-place.
         """
         for i in range(vectors.shape[1]):
-            # Find index of element with maximum absolute value
-            max_abs_idx = np.argmax(np.abs(vectors[:, i]))
+            # Find the first non-zero element in the vector
+            first_nonzero = np.nonzero(vectors[:, i])[0][0]
             # If that element is negative, flip the sign of the whole vector
-            if vectors[max_abs_idx, i] < 0:
+            if vectors[first_nonzero, i] < 0:
                 vectors[:, i] *= -1
 
         return vectors
