@@ -207,7 +207,7 @@ class DiffusionMaps(BaseEstimator, TransformerMixin):
         # Compute the eigenvalues and right eigenvectors for the symmetric matrix A
         eigenvalues, eigenvectors = np.linalg.eigh(A)
         # eigh returns eigenvalues in ascending order, so we reverse the order
-        order = np.argsort(eigenvalues)[::-1]
+        order = np.argsort(np.abs(eigenvalues))[::-1]
         # Sort eigenvalues and eigenvectors in descending order
         eigenvalues = eigenvalues[order]
         eigenvectors = eigenvectors[:, order]

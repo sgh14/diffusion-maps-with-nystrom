@@ -63,8 +63,5 @@ DiffusionMaps(n_components: int, sigma: float, steps: int = 1, alpha: float = 0.
 
 See the class docstrings for detailed information on methods and attributes.
 
-## Contributing
-Contributions are welcome! Please feel free to open an issue or submit a pull request.
-
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
